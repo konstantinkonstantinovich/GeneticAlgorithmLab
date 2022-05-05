@@ -32,13 +32,14 @@ class GeneticAlgorithm:
         # y_value = self.__get_bin_value(chromosome, self.number_of_genes//2, self.number_of_genes//2)*100.0-50.0
         f = simplify("x**2 + 4", transformations='all')
         result = f.subs([(x, x_value)])
-        self.fitness_table.append(result)
         return result
 
     def selection(self):
         new_population = []
         n = 0
-        self.population.sort(key=self.__get_fitness, reverse=True)
+        self.population.sort(key=self.__get_fitness)
+        for i in self.population:
+            self.fitness_table.append(self.__get_fitness(i))
         min_fitness = self.fitness_table[-1]
         max_fitness = self.fitness_table[0]
         self.max_fitness.append(max_fitness)
