@@ -30,19 +30,19 @@ class GeneticAlgorithm:
         x_value = self.__get_bin_value(chromosome, 0, self.number_of_genes)*100.0-50.0
         # y_value = self.__get_bin_value(chromosome, self.number_of_genes//2, self.number_of_genes//2)*100.0-50.0
         f = simplify("x**2 + 4", transformations='all')
-        return -f.subs([(x, x_value)])
+        return f.subs([(x, x_value)])
 
     def selection(self):
         fitness_table = []
         new_population = []
         n = 0
+        self.population.sort(key=self.__get_fitness)
         for chromosome in self.population:
             fitness_table.append(self.__get_fitness(chromosome))
-        min_fitness = min(fitness_table)
-        max_fitness = max(fitness_table)
+        min_fitness = max(fitness_table)
+        max_fitness = min(fitness_table)
         self.max_fitness.append(max_fitness)
         self.avg_fitness.append(sum(fitness_table)/self.number_of_chromosomes)
-        self.population.sort(key=self.__get_fitness)
         if max_fitness!=min_fitness:
             while n < self.number_of_chromosomes:
                 num = random.randint(0, self.number_of_chromosomes-1)
@@ -60,7 +60,7 @@ class GeneticAlgorithm:
     def crossing_over(self):
         for i in range(0, self.number_of_chromosomes, 2):
             if random.random() < self.crossing_over_probability:
-                pos = random.randint(1, self.number_of_genes-1)
+                pos = self.number_of_genes//2
                 j = i+1
                 for k in range(pos):
                     temp = self.population[i][k]

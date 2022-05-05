@@ -67,34 +67,6 @@
       <input type="submit" value="RUN" class="btn btn-primary w-100">
     </form>
     </div>
-    <br>
-    <div class="m-4">
-    {% if result %}
-        <canvas class="row" id="myChart"></canvas>
-        <script>
-        const ctx = document.getElementById('myChart').getContext('2d');
-        const myChart = new Chart(ctx, {
-          type: 'line',
-          data: {
-              labels: {{result[0]}},
-              datasets: [{
-                  label: 'Max fitness',
-                  data: {{result[1]}},
-                  backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                  borderColor: 'rgba(255, 99, 132, 1)'
-              },
-              {
-                label: 'Avg fitness',
-                data: {{result[2]}},
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                borderColor: 'rgba(54, 162, 235, 1)'
-              }
-              ]
-          }
-      });
-      </script>
-    {% endif %}
-    </div>
 
 </body>
 

@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 from algorithm import GeneticAlgorithm
+import time
 
 app = Flask(__name__)
 
@@ -16,10 +17,11 @@ def main():
 
         genetic_alg = GeneticAlgorithm(number_of_iterations, number_of_chromosomes, number_of_genes, mutation_probability, crossing_over_probability, selection_f)
         genetic_alg.population_initialization()
+        start = time.time()
         for i in range(genetic_alg.number_of_iterations):
-            print(i)
             genetic_alg.epoch()
-
+        end = time.time()
+        print(end-start)
         result = [list(range(genetic_alg.number_of_iterations)), genetic_alg.max_fitness, genetic_alg.avg_fitness]
 
-    return render_template('main.html', result=result)
+    return render_template('result.html', result=result)
