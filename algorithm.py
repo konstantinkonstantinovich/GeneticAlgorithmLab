@@ -14,6 +14,7 @@ class GeneticAlgorithm:
         self.max_fitness = []
         self.avg_fitness = []
         self.population = []
+        self.fitness_table = []
 
 
     def population_initialization(self):
@@ -30,26 +31,26 @@ class GeneticAlgorithm:
         x_value = self.__get_bin_value(chromosome, 0, self.number_of_genes)*100.0-50.0
         # y_value = self.__get_bin_value(chromosome, self.number_of_genes//2, self.number_of_genes//2)*100.0-50.0
         f = simplify("x**2 + 4", transformations='all')
-        return f.subs([(x, x_value)])
+        result = f.subs([(x, x_value)])
+        self.fitness_table.append(result)
+        return result
 
     def selection(self):
-        fitness_table = []
         new_population = []
         n = 0
-        self.population.sort(key=self.__get_fitness)
-        for chromosome in self.population:
-            fitness_table.append(self.__get_fitness(chromosome))
-        min_fitness = max(fitness_table)
-        max_fitness = min(fitness_table)
+        self.population.sort(key=self.__get_fitness, reverse=True)
+        min_fitness = self.fitness_table[-1]
+        max_fitness = self.fitness_table[0]
         self.max_fitness.append(max_fitness)
-        self.avg_fitness.append(sum(fitness_table)/self.number_of_chromosomes)
+        self.avg_fitness.append(sum(self.fitness_table)/self.number_of_chromosomes)
         if max_fitness!=min_fitness:
             while n < self.number_of_chromosomes:
                 num = random.randint(0, self.number_of_chromosomes-1)
-                if (self.selection_factor*random.random()) < ((fitness_table[num]-min_fitness)/(max_fitness-min_fitness)):
+                if (self.selection_factor*random.random()) < ((self.fitness_table[num]-min_fitness)/(max_fitness-min_fitness)):
                     new_population.append(self.population[num])
                     n+=1
             self.population = new_population
+        self.fitness_table = []
 
     def mutation(self):
         for i in range(self.number_of_chromosomes):
@@ -58,14 +59,13 @@ class GeneticAlgorithm:
                     self.population[i][j] = 1 - self.population[i][j]
 
     def crossing_over(self):
-        for i in range(0, self.number_of_chromosomes, 2):
+        for i in range(1, self.number_of_chromosomes, 2):
             if random.random() < self.crossing_over_probability:
-                pos = self.number_of_genes//2
-                j = i+1
-                for k in range(pos):
-                    temp = self.population[i][k]
-                    self.population[i][k] = self.population[j][k]
-                    self.population[j][k] = temp
+                pos = random.randint(1,self.number_of_genes-1)
+                first_gene = self.population[i-1]
+                second_gene = self.population[i]
+                self.population[i-1] = first_gene[:pos] + second_gene[pos:]
+                self.population[i] = second_gene[:pos] + first_gene[pos:]
 
     def epoch(self):
         self.mutation()

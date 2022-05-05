@@ -20,8 +20,11 @@ def main():
         start = time.time()
         for i in range(genetic_alg.number_of_iterations):
             genetic_alg.epoch()
+            if genetic_alg.max_fitness[-1] == genetic_alg.avg_fitness[-1]:
+                break
         end = time.time()
         print(end-start)
         result = [list(range(genetic_alg.number_of_iterations)), genetic_alg.max_fitness, genetic_alg.avg_fitness]
+        return render_template('result.html', result=result)
 
-    return render_template('result.html', result=result)
+    return render_template('main.html')
