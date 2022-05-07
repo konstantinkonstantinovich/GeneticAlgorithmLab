@@ -15,7 +15,7 @@ class GeneticAlgorithm:
         self.avg_fitness = []
         self.population = []
         self.fitness_table = []
-
+        self.function = simplify("x**2 - 2*x + 1", transformations='all')
 
     def population_initialization(self):
         self.population = [[random.randint(0, 1) for _ in range(self.number_of_genes) ] for _ in range(self.number_of_chromosomes)]
@@ -28,11 +28,17 @@ class GeneticAlgorithm:
 
     def __get_fitness(self, chromosome):
         x, y = symbols('x y')
-        x_value = self.__get_bin_value(chromosome, 0, self.number_of_genes)*100.0-50.0
+        x_value = self.__get_bin_value(chromosome, 0, self.number_of_genes)*100.0-50
         # y_value = self.__get_bin_value(chromosome, self.number_of_genes//2, self.number_of_genes//2)*100.0-50.0
-        f = simplify("x**2 + 4", transformations='all')
-        result = f.subs([(x, x_value)])
+        result = self.function.subs([(x, x_value)])
         return result
+
+    def get_coordinates(self):
+        x = symbols('x')
+        x_list = [i for i in range(-5,5)]
+        y_list = [self.function.subs([(x, i)]) for i in x_list]
+        return x_list, y_list
+
 
     def selection(self):
         new_population = []
@@ -44,6 +50,7 @@ class GeneticAlgorithm:
         max_fitness = self.fitness_table[0]
         self.max_fitness.append(max_fitness)
         self.avg_fitness.append(sum(self.fitness_table)/self.number_of_chromosomes)
+
         if max_fitness!=min_fitness:
             while n < self.number_of_chromosomes:
                 num = random.randint(0, self.number_of_chromosomes-1)

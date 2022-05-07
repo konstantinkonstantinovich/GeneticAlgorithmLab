@@ -7,6 +7,7 @@ app = Flask(__name__)
 @app.route('/', methods=['post', 'get'])
 def main():
     result = None
+    extra_result = None
     if request.method == 'POST':
         number_of_genes = request.form.get('genes')
         number_of_chromosomes = request.form.get('chromosomes')
@@ -21,10 +22,15 @@ def main():
         for i in range(genetic_alg.number_of_iterations):
             genetic_alg.epoch()
             if genetic_alg.max_fitness[-1] == genetic_alg.avg_fitness[-1]:
+                extra_result = f"Average and maximum converged! Avg = {genetic_alg.avg_fitness[-1]}; Max = {genetic_alg.max_fitness[-1]}"
+                result = [list(range(genetic_alg.number_of_iterations)), genetic_alg.max_fitness, genetic_alg.avg_fitness]
+                return render_template('result.html', result=result, extra_result=extra_result)
                 break
+        extra_result = f"Avg = #{genetic_alg.avg_fitness[-1]}; Max = {genetic_alg.max_fitness[-1]}"
         end = time.time()
         print(end-start)
+        coordinates = genetic_alg.get_coordinates()
         result = [list(range(genetic_alg.number_of_iterations)), genetic_alg.max_fitness, genetic_alg.avg_fitness]
-        return render_template('result.html', result=result)
+        return render_template('result.html', result=result, extra_result=extra_result, coordinates=coordinates)
 
     return render_template('main.html')
