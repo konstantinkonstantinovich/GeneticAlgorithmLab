@@ -1,6 +1,7 @@
 import random
 from sympy import *
 from math import *
+import numpy as np
 
 class GeneticAlgorithm:
 
@@ -15,7 +16,9 @@ class GeneticAlgorithm:
         self.avg_fitness = []
         self.population = []
         self.fitness_table = []
-        self.function = simplify("x**2 - 2*x + 1", transformations='all')
+        self.avg_y = []
+        self.avg_x = []
+        self.function = simplify("x**2", transformations='all')
 
     def population_initialization(self):
         self.population = [[random.randint(0, 1) for _ in range(self.number_of_genes) ] for _ in range(self.number_of_chromosomes)]
@@ -28,14 +31,16 @@ class GeneticAlgorithm:
 
     def __get_fitness(self, chromosome):
         x, y = symbols('x y')
-        x_value = self.__get_bin_value(chromosome, 0, self.number_of_genes)*100.0-50
+        x_value = self.__get_bin_value(chromosome, 0, self.number_of_genes)*10.0-5
         # y_value = self.__get_bin_value(chromosome, self.number_of_genes//2, self.number_of_genes//2)*100.0-50.0
         result = self.function.subs([(x, x_value)])
         return result
 
     def get_coordinates(self):
         x = symbols('x')
-        x_list = [i for i in range(-5,5)]
+        x_min = int(min(self.avg_x))-1
+        x_max = int(max(self.avg_x))+1
+        x_list = [i for i in np.arange(x_min, x_max, abs(x_min-x_max)/self.number_of_iterations)]
         y_list = [self.function.subs([(x, i)]) for i in x_list]
         return x_list, y_list
 
@@ -44,12 +49,17 @@ class GeneticAlgorithm:
         new_population = []
         n = 0
         self.population.sort(key=self.__get_fitness)
+
         for i in self.population:
             self.fitness_table.append(self.__get_fitness(i))
         min_fitness = self.fitness_table[-1]
         max_fitness = self.fitness_table[0]
         self.max_fitness.append(max_fitness)
         self.avg_fitness.append(sum(self.fitness_table)/self.number_of_chromosomes)
+        avg_mean_chromosome = min(self.fitness_table, key=lambda a:abs(a-self.avg_fitness[-1]))
+        index = self.fitness_table.index(avg_mean_chromosome)
+        self.avg_x.append(self.__get_bin_value(self.population[index], 0, self.number_of_genes)*10.0-5)
+        self.avg_y.append(avg_mean_chromosome)
 
         if max_fitness!=min_fitness:
             while n < self.number_of_chromosomes:

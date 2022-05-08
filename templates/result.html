@@ -6,6 +6,7 @@
 </head>
 <body>
   <h5 class="text-center m-2">{{ extra_result }}</h5>
+  <h6 class="text-center m-2">Best avg fitness: {{ best_avg }}</h6>
   <div class="me-5 ms-5 mb-2 pe-5 ps-5 pb-2">
   {% if result %}
       <canvas class="row" id="myChart"></canvas>
@@ -18,15 +19,16 @@
             datasets: [{
                 label: 'Avg fitness',
                 data: {{result[2]}},
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                borderColor: 'rgba(255, 99, 132, 1)'
+                backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                borderColor: 'rgba(255, 159, 64, 1)'
             },
             {
                 label: 'Max fitness',
                 data: {{result[1]}},
                 backgroundColor: 'rgba(54, 162, 235, 0.2)',
                 borderColor: 'rgba(54, 162, 235, 1)'
-            }
+            },
+
             ]
         }
     });
@@ -38,17 +40,28 @@
     {% if coordinates %}
       <canvas class="row" id="myChart1"></canvas>
         <script>
-          const ctx = document.getElementById('myChart1').getContext('2d');
-          const myChart = new Chart(ctx, {
-            type: 'line',
+          const ctx1 = document.getElementById('myChart1').getContext('2d');
+          const myChart1 = new Chart(ctx1, {
             data: {
-                labels: {{coordinates[0]}},
-                datasets: [{
-                    label: 'y',
+                datasets: [
+                {
+                  type: 'scatter',
+                  label: 'Algorithm result values',
+                  data: {{ scatter_data}},
+                  backgroundColor: 'rgb(75, 192, 192)'
+                },
+                {
+                    type: 'line',
+                    label: 'xˆ2 - 2x + 1',
                     data: {{coordinates[1]}},
                     backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderColor: 'rgba(255, 99, 132, 1)'
-                }]
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    pointStyle: 'circle',
+                    pointRadius: 0,
+                    pointHoverRadius: 0
+                }
+                ],
+                labels: {{coordinates[0]}}
             }
           });
         </script>

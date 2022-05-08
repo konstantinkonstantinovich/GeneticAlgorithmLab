@@ -22,15 +22,23 @@ def main():
         for i in range(genetic_alg.number_of_iterations):
             genetic_alg.epoch()
             if genetic_alg.max_fitness[-1] == genetic_alg.avg_fitness[-1]:
+                best_avg = min(genetic_alg.avg_fitness, key=lambda a:abs(a-genetic_alg.max_fitness[-1]))
+                coordinates = genetic_alg.get_coordinates()
                 extra_result = f"Average and maximum converged! Avg = {genetic_alg.avg_fitness[-1]}; Max = {genetic_alg.max_fitness[-1]}"
                 result = [list(range(genetic_alg.number_of_iterations)), genetic_alg.max_fitness, genetic_alg.avg_fitness]
-                return render_template('result.html', result=result, extra_result=extra_result)
+                return render_template('result.html', result=result, extra_result=extra_result, coordinates=coordinates, best_avg=best_avg)
                 break
+        coordinates = genetic_alg.get_coordinates()
         extra_result = f"Avg = #{genetic_alg.avg_fitness[-1]}; Max = {genetic_alg.max_fitness[-1]}"
+        best_avg = min(genetic_alg.avg_fitness, key=lambda a:abs(a-genetic_alg.max_fitness[-1]))
+        temp_list = []
+        for x, y in zip(genetic_alg.avg_x, genetic_alg.avg_y):
+	           temp_list.append({'x': x, 'y': y})
+        scatter_data = str(temp_list).replace('\'', '')
+        print(genetic_alg.max_fitness)
         end = time.time()
         print(end-start)
-        coordinates = genetic_alg.get_coordinates()
         result = [list(range(genetic_alg.number_of_iterations)), genetic_alg.max_fitness, genetic_alg.avg_fitness]
-        return render_template('result.html', result=result, extra_result=extra_result, coordinates=coordinates)
+        return render_template('result.html', result=result, extra_result=extra_result, coordinates=coordinates, best_avg=best_avg, scatter_data=scatter_data)
 
     return render_template('main.html')
